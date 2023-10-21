@@ -1,0 +1,10 @@
+apiVersion: apps.gitlab.com/v1beta2
+kind: Runner
+metadata:
+     name: gitlab-runner
+     namespace: gitlab-system
+spec:
+     gitlabUrl: https://gitlab.example.com
+     buildImage: alpine
+     token: gitlab-runner-secret
+     tags: kubernetes

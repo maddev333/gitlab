@@ -1,4 +1,4 @@
-kubectl apply -f https://github.com/jetstack/cert-manager/releases/download/v1.6.1/cert-manager.yaml
+kubectl apply -f https://github.com/jetstack/cert-manager/releases/download/v1.7.1/cert-manager.yaml
 
 GL_OPERATOR_VERSION=0.24.1 # https://gitlab.com/gitlab-org/cloud-native/gitlab-operator/-/releases
 PLATFORM=kubernetes # or "openshift"
