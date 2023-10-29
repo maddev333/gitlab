@@ -16,10 +16,37 @@ wget -q -O - https://raw.githubusercontent.com/k3d-io/k3d/main/install.sh | bash
 k3d cluster create --api-port 6550 -p "80:80@loadbalancer" -p "443:443@loadbalancer" --agents 2
 
 ```
-# Github operator running on Kubernetes
+# Install Harbor
 ```
-Run gitlab_operator.sh
-Run mygitlab.yml
+helm repo add harbor https://helm.goharbor.io
+helm fetch harbor/harbor --untar
+Update values.yml
+ ingress:
+    hosts:
+      core: core.kubemaster.me
+      className: "traefik"
+
+helm install my-release harbor/
+```
+
+# Install Nexus
+```
+helm repo add sonatype https://sonatype.github.io/helm3-charts/
+helm fetch sonatype/nexus-iq-server --untar
+ingress:
+  enabled: true
+  ingressClassName: traefik
+  #annotations:
+  #  nginx.ingress.kubernetes.io/proxy-body-size: "0"
+
+helm install nexus nexus-iq-server/
+```
+# Github Helm
+```
+Install Helm
+curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3
+Run gitlab_create_helm.sh
+
 ```
 # Github runner running on Docker
 ```
