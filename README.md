@@ -1,4 +1,4 @@
-# Inital install (Docker & k3d)
+# Inital install (Docker)
 ```
 Install Rocky
 Install Docker
@@ -12,13 +12,21 @@ sudo usermod -aG docker $USER
 wget -q -O - https://raw.githubusercontent.com/k3d-io/k3d/main/install.sh | bash
 
 ```
-# Cluster create
+# Cluster create RKE2
 ```
-make cluster
-#k3d cluster create --api-port 6550 -p "80:80@loadbalancer" -p "443:443@loadbalancer" --k3s-arg="--disable=traefik@server:0"
-
+curl -sfL https://get.rke2.io | INSTALL_RKE2_VERSION="v1.28.2+rke2r1" sh -
+systemctl enable rke2-server.service
+systemctl start rke2-server.service
 curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3
 curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
+
+
+```
+# Install Rancher
+```
+helm repo add rancher-latest https://releases.rancher.com/server-charts/latest
+helm repo add jetstack https://charts.jetstack.io
+
 
 
 ```
