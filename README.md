@@ -14,11 +14,13 @@ wget -q -O - https://raw.githubusercontent.com/k3d-io/k3d/main/install.sh | bash
 ```
 # Cluster create RKE2
 ```
-curl -sfL https://get.rke2.io | INSTALL_RKE2_VERSION="v1.28.2+rke2r1" sh -
+curl -sfL https://get.rke2.io | INSTALL_RKE2_VERSION="v1.26.9+rke2r1" sh -
 systemctl enable rke2-server.service
 systemctl start rke2-server.service
+export KUBECONFIG=/etc/rancher/rke2/rke2.yaml
+alias k=/var/lib/rancher/rke2/bin/kubectl
 curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3
-curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
+#curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
 
 
 ```
@@ -26,8 +28,9 @@ curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stabl
 ```
 helm repo add rancher-latest https://releases.rancher.com/server-charts/latest
 helm repo add jetstack https://charts.jetstack.io
-
-
+k apply -f https://github.com/jetstack/cert-manager/releases/download/v1.6.1/cert-manager.crds.yaml
+helm upgrade -i cert-manager jetstack/cert-manager --namespace cert-manager --create-namespace
+helm upgrade -i rancher rancher-latest/rancher --create-namespace --namespace cattle-system --set hostname=rancher.example.com --set bootstrapPassword=bootStrapAllTheThings --set replicas=1
 
 ```
 # Install Nginx ingress controller
