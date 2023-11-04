@@ -68,6 +68,7 @@ helm install nexus nexus-iq-server/
 Install Helm
 curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3
 Run gitlab_create_helm.sh
+openssl s_client -showcerts -connect gitlab.example.com:443 -servername gitlab.example.com < /dev/null 2>/dev/null | openssl x509 -outform PEM > /etc/gitlab-runner/certs/gitlab.example.com.crt
 
 ```
 # Github runner running on Docker
