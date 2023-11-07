@@ -1,6 +1,7 @@
 # Inital install (Docker)
 ```
 Install Rocky
+resize - cfdisk /dev/sda, growpart /dev/sda 3, xfs_growfs /
 Install Docker
 sudo yum remove docker docker-client docker-client-latest docker-common docker-latest docker-latest-logrotate docker-logrotate docker-engine
 sudo yum install -y yum-utils
@@ -22,7 +23,8 @@ alias k=/var/lib/rancher/rke2/bin/kubectl
 curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3
 #curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
 
-
+curl -sfL https://get.rke2.io | INSTALL_RKE2_VERSION="v1.26.9+rke2r1" INSTALL_RKE2_TYPE="agent" sh -
+systemctl enable rke2-agent.service
 ```
 # Install Rancher
 ```
