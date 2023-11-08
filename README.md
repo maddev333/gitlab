@@ -13,6 +13,59 @@ sudo usermod -aG docker $USER
 wget -q -O - https://raw.githubusercontent.com/k3d-io/k3d/main/install.sh | bash
 
 ```
+# K3S
+```
+curl -sfL https://get.k3s.io | INSTALL_K3S_EXEC=“-write-kubeconfig-mode 644 —no-deploy traefik —disable traefik —tls-san “$MASTER_IP” —node-external-ip “$MASTER_IP” —disable servicelb “ sh -s -
+
+curl -sfL https://get.k3s.io | INSTALL_K3S_EXEC="--write-kubeconfig-mode 644 --token some_random_password --bind-address 10.231.19.216 --disable local-storage" sh -s -
+journalctl -xeu k3s.service
+systemctl status k3s.service
+
+curl -sfL https://get.k3s.io | INSTALL_K3S_EXEC="--write-kubeconfig-mode 644 —no-deploy traefik —disable traefik —tls-san $MASTER_IP —node-external-ip $MASTER_IP --disable local-storage" sh -s -
+
+curl -sfL https://get.k3s.io | INSTALL_K3S_EXEC="server" sh -s - --token 12345 --disable traefik --write-kubeconfig-mode 644 --tls-san $MASTER_IP --node-external-ip $MASTER_IP --disable local-storage
+
+kubectl apply -f https://raw.githubusercontent.com/longhorn/longhorn/v1.5.1/deploy/longhorn.yaml
+
+# First add metallb repository to your helm
+helm repo add metallb https://metallb.github.io/metallb
+# Check if it was found
+helm search repo metallb
+# Install metallb
+helm upgrade --install metallb metallb/metallb --create-namespace \
+--namespace metallb-system --wait
+
+cat << 'EOF' | kubectl apply -f -
+apiVersion: metallb.io/v1beta1
+kind: IPAddressPool
+metadata:
+  name: default-pool
+  namespace: metallb-system
+spec:
+  addresses:
+  - 10.231.19.216-10.231.19.216
+---
+apiVersion: metallb.io/v1beta1
+kind: L2Advertisement
+metadata:
+  name: default
+  namespace: metallb-system
+spec:
+  ipAddressPools:
+  - default-pool
+EOF
+kubectl get svc -A
+
+https://raw.githubusercontent.com/longhorn/longhorn/v1.4.0/scripts/environment_check.sh
+
+helm install longhorn longhorn/longhorn --namespace longhorn-system --create-namespace --set defaultSettings.defaultDataPath="/storage01" --version 1.5.2
+
+helm install longhorn longhorn/longhorn --namespace longhorn-system --create-namespace" --version 1.5.2
+
+kubectl delete -f https://raw.githubusercontent.com/longhorn/longhorn/v1.5.2/deploy/longhorn.yaml
+
+
+```
 # Cluster create RKE2
 ```
 curl -sfL https://get.rke2.io | INSTALL_RKE2_VERSION="v1.26.9+rke2r1" sh -
@@ -37,6 +90,7 @@ helm upgrade -i rancher rancher-latest/rancher --create-namespace --namespace ca
 ```
 # Install Nginx ingress controller
 ```
+
 helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx
 helm install ingress-nginx ingress-nginx/ingress-nginx -n ingress-nginx --create-namespace --set controller.publishService.enabled=true
 ```
