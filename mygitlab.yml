@@ -1,3 +1,4 @@
+cat << 'EOF' | kubectl apply -f -
 apiVersion: apps.gitlab.com/v1beta1
 kind: GitLab
 metadata:
@@ -10,8 +11,9 @@ spec:
       global:
         edition: ce
         hosts:
-          domain: example.com # use a real domain here
+          domain: kube.us # use a real domain here
         ingress:
           configureCertmanager: true
       certmanager-issuer:
         email: youremail@example.com # use your real email address here
+EOF
