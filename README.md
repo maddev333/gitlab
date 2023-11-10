@@ -9,7 +9,8 @@ sudo yum install docker-ce docker-ce-cli containerd.io docker-buildx-plugin dock
 sudo systemctl start docker
 sudo systemctl enable --now docker
 sudo usermod -aG docker $USER
-wget -q -O - https://raw.githubusercontent.com/k3d-io/k3d/main/install.sh | bash
+#wget -q -O - https://raw.githubusercontent.com/k3d-io/k3d/main/install.sh | bash
+curl -sfL https://get.k3s.io | INSTALL_K3S_EXEC="server --write-kubeconfig-mode 0644 --disable traefik --tls-san "$MASTER_IP" --node-external-ip "$MASTER_IP" --token 12345" sh -s -
 
 ```
 # Cluster create RKE2
@@ -68,7 +69,8 @@ helm install nexus nexus-iq-server/
 Install Helm
 curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3
 Run gitlab_create_helm.sh
-openssl s_client -showcerts -connect gitlab.example.com:443 -servername gitlab.example.com < /dev/null 2>/dev/null | openssl x509 -outform PEM > /etc/gitlab-runner/certs/gitlab.example.com.crt
+
+helm upgrade --install agent gitlab/gitlab-agent --namespace gitlab-agent-agent --create-namespace --set image.tag=v16.4.0 --set config.token=glagent-i6tVQKBFKuBtaNWbgR3akyAZVjFFmZGKs5JYTVvkyqxxmFDzJQ --set config.kasAddress=wss://kas.example.com --set-file config.caCert=gitlab.example.com.crt
 
 ```
 # Github runner running on Docker
@@ -97,4 +99,31 @@ Enter the default Docker image (for example, ruby:2.7): microsoft/dotnet-framewo
 Docker desktop running on windows pro needed
 docker pull mcr.microsoft.com/windows/nanoserver:ltsc2022
 docker run -it mcr.microsoft.com/windows/nanoserver:ltsc2022 cmd.exe
+```
+
+# Multipass
+```
+multipass launch --name k3s-demo --cpus 2 --mem 4g --disk 20g
+multipass exec k3s-demo -- bash -c "curl -sfL https://get.k3s.io | INSTALL_K3S_EXEC="server" sh -s - --token 12345 --disable traefik --write-kubeconfig-mode 644"
+
+multipass launch --name k3s-agent --cpus 2 --mem 8g --disk 40g
+multipass exec k3s-agent -- bash -c 'curl -sfL https://get.k3s.io | INSTALL_K3S_EXEC="agent" sh -s - --token 12345 --server https://172.20.132.15:6443'
+
+multipass shell k3s-demo
+kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v1.8.2/deploy/static/provider/baremetal/deploy.yaml
+
+multipass launch --name gitlab --cpus 2 --mem 4g --disk 40g
+multipass exec gitlab -- bash -c 'curl -s https://packages.gitlab.com/install/repositories/gitlab/gitlab-ce/script.deb.sh | sudo bash'
+multipass exec gitlab -- bash -c 'sudo apt install gitlab-ce'
+sudo cat /etc/gitlab/initial_root_password
+
+helm repo add gitlab https://charts.gitlab.io
+helm repo update
+helm upgrade --install agent1 gitlab/gitlab-agent \
+    --namespace gitlab-agent-agent1 \
+    --create-namespace \
+    --set image.tag=v16.5.0 \
+    --set config.token=glagent-m5tQBjx7h4ZzYPpqV9x-w2zaREAXFhyb9KBssAQgxRVY8LFx_g \
+    --set config.kasAddress=ws://gitlab.example.com/-/kubernetes-agent/
+
 ```
