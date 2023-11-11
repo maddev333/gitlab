@@ -13,6 +13,8 @@ sudo usermod -aG docker $USER
 #wget -q -O - https://raw.githubusercontent.com/k3d-io/k3d/main/install.sh | bash
 curl -sfL https://get.k3s.io | INSTALL_K3S_EXEC="server --write-kubeconfig-mode 0644 --disable traefik --tls-san "$MASTER_IP" --node-external-ip "$MASTER_IP" --token 12345" sh -s -
 
+sudo dnf update -y
+
 ```
 # K3S
 ```
@@ -25,6 +27,15 @@ systemctl status k3s.service
 curl -sfL https://get.k3s.io | INSTALL_K3S_EXEC="--write-kubeconfig-mode 644 —no-deploy traefik —disable traefik —tls-san $MASTER_IP —node-external-ip $MASTER_IP --disable local-storage" sh -s -
 
 curl -sfL https://get.k3s.io | INSTALL_K3S_EXEC="server" sh -s - --token 12345 --disable traefik --write-kubeconfig-mode 644 --tls-san $MASTER_IP --node-external-ip $MASTER_IP --disable local-storage
+
+curl -sfL https://get.k3s.io | INSTALL_K3S_VERSION=v1.26.10-rc3+k3s2 INSTALL_K3S_EXEC="server" sh -s - --token 12345 --disable traefik --write-kubeconfig-mode 644 --tls-san $MASTER_IP --node-external-ip $MASTER_IP
+
+
+curl -Lo /usr/local/bin/k3s https://github.com/k3s-io/k3s/releases/download/v1.26.10-rc3+k3s2/k3s; chmod a+x /usr/local/bin/k3s
+
+
+sudo /usr/local/bin/k3s server --write-kubeconfig-mode=644 --token 12345 --disable traefik --write-kubeconfig-mode 644 --tls-san $MASTER_IP --node-external-ip $MASTER_IP
+
 
 kubectl apply -f https://raw.githubusercontent.com/longhorn/longhorn/v1.5.1/deploy/longhorn.yaml
 
@@ -91,6 +102,8 @@ helm upgrade -i rancher rancher-latest/rancher --create-namespace --namespace ca
 ```
 # Install Nginx ingress controller
 ```
+kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v1.8.2/deploy/static/provider/baremetal/deploy.yaml
+
 
 helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx
 helm install ingress-nginx ingress-nginx/ingress-nginx -n ingress-nginx --create-namespace --set controller.publishService.enabled=true

@@ -8,3 +8,5 @@ kubectl apply -f https://gitlab.com/api/v4/projects/18899486/packages/generic/gi
 #kubectl apply -f https://gitlab.com/api/v4/projects/18899486/packages/generic/gitlab-operator/0.24.1/gitlab-operator-kubernetes-0.24.1.yaml
 
 
+kubectl -n gitlab-system get secret gitlab-gitlab-initial-root-password -ojsonpath='{.data.password}' | base64 –decode ; echo
+
