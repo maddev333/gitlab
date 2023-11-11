@@ -179,7 +179,7 @@ multipass launch --name k3s-demo --cpus 2 --mem 4g --disk 20g
 multipass exec k3s-demo -- bash -c "curl -sfL https://get.k3s.io | INSTALL_K3S_EXEC="server" sh -s - --token 12345 --disable traefik --write-kubeconfig-mode 644"
 
 multipass launch --name k3s-agent --cpus 2 --mem 8g --disk 40g
-multipass exec k3s-agent -- bash -c 'curl -sfL https://get.k3s.io | INSTALL_K3S_EXEC="agent" sh -s - --token 12345 --server https://172.20.132.15:6443'
+multipass exec k3s-agent -- bash -c "curl -sfL https://get.k3s.io | INSTALL_K3S_EXEC="agent" sh -s - --token 12345 --server https://172.18.240.106:6443"
 
 multipass shell k3s-demo
 kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v1.8.2/deploy/static/provider/baremetal/deploy.yaml
