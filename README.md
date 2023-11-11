@@ -10,10 +10,13 @@ sudo yum install docker-ce docker-ce-cli containerd.io docker-buildx-plugin dock
 sudo systemctl start docker
 sudo systemctl enable --now docker
 sudo usermod -aG docker $USER
+sudo curl -SL https://github.com/docker/compose/releases/download/v2.9.0/docker-compose-linux-x86_64 -o /usr/local/bin/docker-compose
+sudo chmod +x /usr/local/bin/docker-compose 
 #wget -q -O - https://raw.githubusercontent.com/k3d-io/k3d/main/install.sh | bash
 curl -sfL https://get.k3s.io | INSTALL_K3S_EXEC="server --write-kubeconfig-mode 0644 --disable traefik --tls-san "$MASTER_IP" --node-external-ip "$MASTER_IP" --token 12345" sh -s -
 
 sudo dnf update -y
+
 
 ```
 # K3S
