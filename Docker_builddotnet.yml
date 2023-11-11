@@ -1,0 +1,19 @@
+# escape=`
+
+FROM mcr.microsoft.com/windows/servercore:ltsc2022
+RUN powershell -Command `
+        $ErrorActionPreference = 'Stop'; `
+        $ProgressPreference = 'SilentlyContinue'; `
+        Invoke-WebRequest `
+            -UseBasicParsing `
+            -Uri https://dot.net/v1/dotnet-install.ps1 `
+            -OutFile dotnet-install.ps1; `
+        ./dotnet-install.ps1 `
+            -InstallDir '/Program Files/dotnet' `
+            -Channel 6.0 `
+            -Runtime dotnet; `
+        Remove-Item -Force dotnet-install.ps1 `
+    && setx /M PATH "%PATH%;C:\Program Files\dotnet"
+	
+#docker build -t builddotnet:6.0 -m 2GB .
+#docker run -it builddotnet:6.0
